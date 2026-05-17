@@ -8,8 +8,8 @@ import { verifyJwt } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/registerUser").post(registerUser);
-router.route("/loginUser").post(loginUser);
-router.route("/logoutUser").post(verifyJwt, logoutUser);
+router.route("/register").post(registerUser);
+router.route("/login").post(loginUser);
+router.route("/logout").post(verifyJwt, logoutUser);
 
 export default router;
