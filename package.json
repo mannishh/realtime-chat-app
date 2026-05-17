@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/mannishh/realtime-chat-app#readme",
   "dependencies": {
+    "socket.io-client": "^4.8.3",
     "zod": "^4.4.3"
   }
 }
