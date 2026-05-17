@@ -21,9 +21,11 @@ app.get("/", (req, res) => {
 
 //routes import
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from './routes/user.routes.js'
 
 // routes declaration
 app.use("/api/auth", authRoutes);
+app.use('/api/user', userRoutes )
 
 
 export default app;
