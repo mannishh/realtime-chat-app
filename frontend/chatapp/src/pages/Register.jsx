@@ -33,7 +33,7 @@ const Register = () => {
       toast.success("User created successfully");
 
       if (createdUser) {
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       if (error.errors) {
