@@ -1,7 +1,11 @@
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
-import { registerSchema, loginSchema } from "../../../sharedValidation/auth.schema.js";
+import {
+  registerSchema,
+  loginSchema,
+} from "../../../sharedValidation/auth.schema.js";
+
 
 const cookieOptions = {
   httpOnly: true,
@@ -35,6 +39,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password,
+      isOnline: true,
     });
 
     // removing password
@@ -80,6 +85,9 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    user.isOnline = true;
+    await user.save();
+
     // generate token
     const token = generateToken(user._id);
 
@@ -92,5 +100,21 @@ export const loginUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const logoutUser = async (req, res) => {
+  try {
+    // Optional: Turn off the online flag using the req.user provided by verifyJwt
+    if (req.user) {
+      await User.findByIdAndUpdate(req.user._id, { isOnline: false });
+    }
+
+    return res
+      .status(200)
+      .clearCookie("token", { httpOnly: true, secure: true, sameSite: "Lax" })
+      .json({ message: "Logged out successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };
