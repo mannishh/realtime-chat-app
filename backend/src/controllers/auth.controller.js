@@ -1,11 +1,7 @@
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
-import {
-  registerSchema,
-  loginSchema,
-} from "../../../sharedValidation/auth.schema.js";
-
+import { registerSchema, loginSchema } from "../../../shared/auth.schema.js";
 
 const cookieOptions = {
   httpOnly: true,
