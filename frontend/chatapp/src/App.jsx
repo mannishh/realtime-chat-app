@@ -2,9 +2,10 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Dashboard from './pages/Dashboard'
+import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
+import DashboardLayout from "./layout/DashboardLayout";
 
 function App() {
   return (
@@ -17,7 +18,9 @@ function App() {
 
       {/* protected routes */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Route>
     </Routes>
   );
