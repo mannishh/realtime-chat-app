@@ -7,7 +7,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: true,
   sameSite: "Lax", // Protects against CSRF attacks
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: 1 * 24 * 60 * 60 * 1000,
 };
 
 export const registerUser = async (req, res) => {
