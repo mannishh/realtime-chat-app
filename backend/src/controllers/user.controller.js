@@ -13,6 +13,40 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const getUserCount = async (req, res) => {
+  try {
+    // Run an aggregation pipeline to get all counts in a single database hit
+    const stats = await User.aggregate([
+      {
+        $facet: {
+          total: [{ $count: "count" }],
+          online: [{ $match: { isOnline: true } }, { $count: "count" }],
+          offline: [{ $match: { isOnline: false } }, { $count: "count" }],
+        },
+      },
+    ]);
+
+    // Extract values safely, defaulting to 0 if no documents match
+    const totalCount = stats[0].total[0]?.count || 0;
+    const onlineCount = stats[0].online[0]?.count || 0;
+    const offlineCount = stats[0].offline[0]?.count || 0;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        count: totalCount,
+        online: onlineCount,
+        offline: offlineCount,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const getMe = async (req, res) => {
   try {
     if (!req.user) {
@@ -25,5 +59,40 @@ export const getMe = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getUserStatus = async (req, res) => {
+  try {
+    const segmentedUsers = await User.aggregate([
+      {
+        $facet: {
+          onlineUsers: [
+            { $match: { isOnline: true } },
+            { $project: { password: 0, __v: 0 } }, //exclude password
+          ],
+
+          offlineUsers: [
+            { $match: { isOnline: false } },
+            { $project: { password: 0, __v: 0 } },
+          ],
+        },
+      },
+    ]);
+
+    const online = segmentedUsers[0]?.onlineUsers || [];
+    const offline = segmentedUsers[0]?.offlineUsers || [];
+
+    return res.status(200).json({
+      data: {
+        online,
+        offline,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
