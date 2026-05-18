@@ -1,3 +1,4 @@
+import mongoose, { mongo } from "mongoose";
 import { User } from "../models/user.model.js";
 
 export const getAllUsers = async (req, res) => {
@@ -15,13 +16,22 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserCount = async (req, res) => {
   try {
+    //convert to ObjectId for aggregation
+    const currentUserId = new mongoose.Types.ObjectId(req.user._id);
+
     // Run an aggregation pipeline to get all counts in a single database hit
     const stats = await User.aggregate([
       {
         $facet: {
           total: [{ $count: "count" }],
-          online: [{ $match: { isOnline: true } }, { $count: "count" }],
-          offline: [{ $match: { isOnline: false } }, { $count: "count" }],
+          online: [
+            { $match: { isOnline: true, _id: { $ne: currentUserId } } },
+            { $count: "count" },
+          ],
+          offline: [
+            { $match: { isOnline: false, _id: { $ne: currentUserId } } },
+            { $count: "count" },
+          ],
         },
       },
     ]);
@@ -64,16 +74,19 @@ export const getMe = async (req, res) => {
 
 export const getUserStatus = async (req, res) => {
   try {
+    //convert to ObjectId for aggregation
+    const currentUserId = new mongoose.Types.ObjectId(req.user._id);
+
     const segmentedUsers = await User.aggregate([
       {
         $facet: {
           onlineUsers: [
-            { $match: { isOnline: true } },
+            { $match: { isOnline: true, _id: { $ne: currentUserId } } },
             { $project: { password: 0, __v: 0 } }, //exclude password
           ],
 
           offlineUsers: [
-            { $match: { isOnline: false } },
+            { $match: { isOnline: false, _id: { $ne: currentUserId } } },
             { $project: { password: 0, __v: 0 } },
           ],
         },
