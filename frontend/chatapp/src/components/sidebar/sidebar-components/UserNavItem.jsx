@@ -1,40 +1,17 @@
 import React, { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import Avatar from "./Avatar";
+import { getAvatarColor } from "../../../utils/avatarUtils";
 
 const UserNavItem = ({ user }) => {
   const name = user.name;
   const initials = name.charAt(0).toUpperCase();
 
-  const avatarColors = [
-    "bg-indigo-600 text-indigo-100",
-    "bg-purple-600 text-purple-100",
-    "bg-violet-600 text-violet-100",
-    "bg-fuchsia-600 text-fuchsia-100",
-    "bg-pink-600 text-pink-100",
-    "bg-emerald-600 text-emerald-100",
-    "bg-teal-600 text-teal-100",
-    "bg-cyan-600 text-cyan-100",
-    "bg-blue-600 text-blue-100",
-  ];
-
-  const colorClass = useMemo(() => {
-    if (!name) return avatarColors[0];
-
-    let charCodeSum = 0;
-    // Loops through every single letter of the user's name
-    for (let i = 0; i < name.length; i++) {
-      charCodeSum += name.charCodeAt(i); // Converts letters into numbers (e.g., 'A' = 65)
-    }
-
-    // The remainder (%) operation forces the large sum to lock perfectly onto your color array length
-    const colorIndex = charCodeSum % avatarColors.length;
-    return avatarColors[colorIndex];
-  }, [name]); // This means it ONLY recalculates if the name itself changes
+  const colorClass = useMemo(() => getAvatarColor(name), [name]);
 
   return (
     <NavLink
-      to={`/user/${user.id}`}
+      to={`/user/message/${user._id}`}
       className="block"
       style={({ isActive }) => ({
         background: isActive ? "#1a2030" : "transparent",

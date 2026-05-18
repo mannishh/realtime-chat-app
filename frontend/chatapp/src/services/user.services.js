@@ -14,3 +14,8 @@ export const getUserStatus = async () => {
   const response = await api.get("/user/getStatus");
   return response.data;
 };
+
+export const getUserById = async (id) => {
+  const response = await api.get(`/user/${id}`);
+  return response.data;
+};

@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
 import DashboardLayout from "./layout/DashboardLayout";
+import Message from "./components/message/Message";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path='/user/message/:id' element={<Message/>}/>
         </Route>
       </Route>
     </Routes>
