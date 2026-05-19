@@ -33,8 +33,10 @@ npm install
 ```env
 PORT=8000
 MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-CLIENT_URL=http://localhost:5173
+# Secret key for JWT signing (generate a secure random string)
+ACCESS_TOKEN_SECRET=
+
+ACCESS_TOKEN_EXPIRY=1d
 ```
 
 
