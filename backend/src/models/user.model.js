@@ -27,6 +27,17 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    socketId: {
+      type: String,
+      default: null
+    },
+
+     // Set when user disconnects so sidebar can show "Last seen X ago"
+    lastSeen: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

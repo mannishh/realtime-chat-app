@@ -2,12 +2,34 @@ import bcrypt from "bcryptjs";
 import { User } from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
 import { registerSchema, loginSchema } from "../../../shared/auth.schema.js";
+import { getIO } from "../socket/io.js";
 
 const cookieOptions = {
   httpOnly: true,
   secure: true,
   sameSite: "Lax", // Protects against CSRF attacks
   maxAge: 1 * 24 * 60 * 60 * 1000,
+};
+
+// ─── Helper — broadcast fresh online/offline lists to all clients ─────────────
+const broadcastUserStatus = async () => {
+  try {
+    const io = getIO();
+
+    const [onlineUsers, offlineUsers] = await Promise.all([
+      User.find({ isOnline: true }).select("_id name isOnline lastSeen"),
+      User.find({ isOnline: false }).select("_id name isOnline lastSeen"),
+    ]);
+
+    // Every connected frontend receives this and refetches / updates state
+    io.emit("user_status_changed", {
+      online: onlineUsers,
+      offline: offlineUsers,
+    });
+  } catch (err) {
+    // Non-fatal — log but don't crash the request
+    console.error("broadcastUserStatus error:", err.message);
+  }
 };
 
 export const registerUser = async (req, res) => {
@@ -44,6 +66,9 @@ export const registerUser = async (req, res) => {
 
     // generate token
     const token = generateToken(user._id);
+
+    // Notify all other clients that a new user is online
+    await broadcastUserStatus();
 
     return res.status(201).cookie("token", token, cookieOptions).json({
       message: "User registered successfully",
@@ -90,6 +115,9 @@ export const loginUser = async (req, res) => {
     const userObject = user.toObject();
     delete userObject.password;
 
+    // Notify all other clients this user is now online
+    await broadcastUserStatus();
+
     return res.status(200).cookie("token", token, cookieOptions).json({
       message: "Login successful",
       user: userObject,
@@ -101,9 +129,13 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
-    // Optional: Turn off the online flag using the req.user provided by verifyJwt
     if (req.user) {
-      await User.findByIdAndUpdate(req.user._id, { isOnline: false });
+      await User.findByIdAndUpdate(req.user._id, {
+        isOnline: false,
+        lastSeen: new Date(),
+      });
+
+      await broadcastUserStatus();
     }
 
     return res

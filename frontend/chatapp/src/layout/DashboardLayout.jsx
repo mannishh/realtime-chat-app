@@ -1,9 +1,13 @@
 import React from 'react'
-import { Outlet } from "react-router-dom";
+import { Outlet, useSubmit } from "react-router-dom";
+import useSocket from '../hooks/useSocket';
 import Sidebar from '../components/sidebar/Sidebar';
+import { useAuth } from '../context/AuthContext';
 
 
 const DashboardLayout = () => {
+  const {user} = useAuth()
+  useSocket(user)
   return (
      <div
           className="flex h-screen overflow-hidden font-sans"
