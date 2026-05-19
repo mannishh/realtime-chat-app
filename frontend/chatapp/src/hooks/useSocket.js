@@ -24,7 +24,6 @@ const useSocket = (user) => {
       }
 
       socket.on("connect", () => {
-        console.log("🟢 Socket connected:", socket.id);
       });
 
       socket.on("connect_error", (err) => {
@@ -34,7 +33,6 @@ const useSocket = (user) => {
       // User logged out → disconnect
       if (socket.connected) {
         socket.disconnect();
-        console.log("🔴 Socket disconnected (logout)");
       }
     }
 

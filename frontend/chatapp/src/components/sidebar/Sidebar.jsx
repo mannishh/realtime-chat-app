@@ -1,23 +1,19 @@
-import useOnlineUsers from "../../hooks/useOnlineUsers";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import CurrentUserFooter from "../sidebar/sidebar-components/CurrentUserFooter";
-import StatsBar from "../sidebar/sidebar-components/StatsBar";
+import { useUnread } from "../../context/UnreadContext";
+import { getUserStatus } from "../../services/user.services";
+import socket from "../../hooks/socket";
+import SidebarHeader from "./sidebar-components/SidebarHeader";
+import StatsBar from "./sidebar-components/StatsBar";
 import OnlineSection from "./sidebar-components/OnlineSection";
 import OfflineSection from "./sidebar-components/OfflineSection";
-import { useState } from "react";
-import { useEffect } from "react";
-import { getUserStatus } from "../../services/user.services";
-import SidebarHeader from "./sidebar-components/SidebarHeader";
-import Avatar from "./sidebar-components/Avatar";
-import socket from "../../hooks/socket";
+import CurrentUserFooter from "./sidebar-components/CurrentUserFooter";
 
 const Sidebar = () => {
   const { user } = useAuth();
-  const username = user.name;
-  const isOnline = user.isOnline;
+  const { unreadCounts, clearUnread } = useUnread(); // ← from context
+  const [onlineUsers,  setOnlineUsers]  = useState([]);
   const [offlineUsers, setOfflineUsers] = useState([]);
-  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const fetchUserStatus = async () => {
     try {
@@ -29,33 +25,20 @@ const Sidebar = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUserStatus(); // fetch once on mount
-  }, []);
+  useEffect(() => { fetchUserStatus(); }, []);
 
-  // ── Socket listener — refetch whenever any user logs in or out 
   useEffect(() => {
     const handleStatusChange = (data) => {
-      const currentUserId = user?._id?.toString();
-
-      // Filter incoming socket arrays before updating local state
-      const cleanOnline = (data.online || []).filter(
-        (u) => u._id.toString() !== currentUserId,
-      );
-      const cleanOffline = (data.offline || []).filter(
-        (u) => u._id.toString() !== currentUserId,
-      );
-
-      setOnlineUsers(cleanOnline);
-      setOfflineUsers(cleanOffline);
+      setOnlineUsers(data.online);
+      setOfflineUsers(data.offline);
     };
-
     socket.on("user_status_changed", handleStatusChange);
+    return () => socket.off("user_status_changed", handleStatusChange);
+  }, []);
 
-    return () => {
-      socket.off("user_status_changed", handleStatusChange);
-    };
-  }, [user]); // CRITICAL: Add user as a dependency so the listener always has access to your logged-in ID
+  const currentUserId = user?._id?.toString();
+  const filteredOnline  = onlineUsers.filter((u) => u._id.toString() !== currentUserId);
+  const filteredOffline = offlineUsers.filter((u) => u._id.toString() !== currentUserId);
 
   return (
     <aside
@@ -63,15 +46,28 @@ const Sidebar = () => {
       style={{ background: "#0f1117", borderRight: "1px solid #1e2535" }}
     >
       <SidebarHeader />
-      <StatsBar />
-      {/* <GeneralChannelLink /> */}
-
+      <StatsBar
+        total={filteredOnline.length + filteredOffline.length}
+        online={filteredOnline.length}
+        offline={filteredOffline.length}
+      />
       <div className="flex-1 overflow-y-auto">
-        {onlineUsers.length > 0 && <OnlineSection users={onlineUsers} />}
-        {offlineUsers.length > 0 && <OfflineSection users={offlineUsers} />}
+        {filteredOnline.length > 0 && (
+          <OnlineSection
+            users={filteredOnline}
+            unreadCounts={unreadCounts}
+            clearUnread={clearUnread}
+          />
+        )}
+        {filteredOffline.length > 0 && (
+          <OfflineSection
+            users={filteredOffline}
+            unreadCounts={unreadCounts}
+            clearUnread={clearUnread}
+          />
+        )}
       </div>
-
-      <CurrentUserFooter name={username} isOnline={isOnline} />
+      <CurrentUserFooter name={user?.name} isOnline={user?.isOnline} />
     </aside>
   );
 };

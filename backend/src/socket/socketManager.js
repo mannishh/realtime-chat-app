@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { Message } from "../models/message.model.js";
+
 
 // ─── 1. Socket Auth Middleware ────────────────────────────────────────────────
 const socketAuthMiddleware = async (socket, next) => {
@@ -67,7 +69,6 @@ export const initSocket = (io) => {
 
   io.on("connection", async (socket) => {
     const user = socket.user;
-    console.log(`✅ ${user.name} connected — socket: ${socket.id}`);
 
     // Mark user online & store their socketId in DB
     await User.findByIdAndUpdate(user._id, {
@@ -79,9 +80,44 @@ export const initSocket = (io) => {
     // Tell everyone this user is now online
     await broadcastUserStatus(io);
 
+    // ── private_message ──────────────────────────────────────────────────────
+socket.on("private_message", async ({ receiverId, text }) => {
+  try {
+    if (!text?.trim()) return;
+
+    // 1. Save to MongoDB
+    const message = await Message.create({
+      senderId: user._id,
+      receiverId,
+      text: text.trim(),
+    });
+
+    // 2. Shape the payload
+    const payload = {
+      _id:       message._id,
+      senderId:  user._id,
+      receiverId,
+      text:      message.text,
+      createdAt: message.createdAt,
+    };
+
+    // 3. Deliver to receiver if online
+    const receiver = await User.findById(receiverId).select("socketId");
+    if (receiver?.socketId) {
+      io.to(receiver.socketId).emit("private_message", payload);
+    }
+
+    // 4. Echo back to sender so their UI updates instantly
+    socket.emit("private_message", payload);
+
+  } catch (error) {
+    console.error("private_message error:", error.message);
+    socket.emit("message_error", { message: "Failed to send message" });
+  }
+});
+
     // ── Disconnect ──────────────────────────────────────────────────────────
     socket.on("disconnect", async () => {
-      console.log(`❌ ${user.name} disconnected — socket: ${socket.id}`);
 
       await User.findByIdAndUpdate(user._id, {
         isOnline: false,

@@ -2,8 +2,9 @@ import React, { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import Avatar from "./Avatar";
 import { getAvatarColor } from "../../../utils/avatarUtils";
+import UnreadBadge from "./UnreadBadge";
 
-const UserNavItem = ({ user }) => {
+const UserNavItem = ({ user, unreadCount = 0, clearUnread }) => {
   const name = user.name;
   const initials = name.charAt(0).toUpperCase();
 
@@ -42,6 +43,9 @@ const UserNavItem = ({ user }) => {
               {user.lastSeen}
             </p>
           </div>
+
+          {/* Unread badge — only shows when count > 0 */}
+          <UnreadBadge count={unreadCount} />
         </div>
       )}
     </NavLink>
