@@ -79,9 +79,12 @@ Frontend will run on:
 ```bash
 http://localhost:5173
 ```
-NOTE: There is no landing page so go to url: 
+## NOTE: There is no landing page so go to url: 
+
+```bash
 http://localhost:5173/login  => For login
 http://localhost:5173/register  => For register
+```
 ---
 
 # Features
