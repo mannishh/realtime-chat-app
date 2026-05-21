@@ -1,4 +1,3 @@
-// frontend/chatapp/vite.config.js
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -12,6 +11,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "@shared": path.resolve(__dirname, "../../shared"),
+    },
+  },
+  build: {
+    commonjsOptions: {
+      include: [/shared/, /node_modules/],
     },
   },
 });
