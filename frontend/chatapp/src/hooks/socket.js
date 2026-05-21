@@ -9,7 +9,7 @@ import { io } from "socket.io-client";
  * This prevents unauthenticated connection attempts.
  * ─────────────────────────────────────────────────────────────
  */
-const socket = io("http://localhost:8000", {
+const socket = io(import.meta.env.VITE_SOCKET_URL, {
   withCredentials: true, // sends the JWT cookie on handshake
   autoConnect: false,    // we control when to connect
 });

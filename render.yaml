@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: chatapp-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        sync: false        # set manually in Render dashboard
+      - key: MONGO_CONNECTION_STRING
+        sync: false
+      - key: ACCESS_TOKEN_SECRET
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRY
+        value: 1d
