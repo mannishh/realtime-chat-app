@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
-import { loginSchema } from "@shared/auth.schema";
+import { loginSchema } from "../validators/auth.schema";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
