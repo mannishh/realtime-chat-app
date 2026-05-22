@@ -13,7 +13,7 @@ const ChatHeader = ({ username, status, chatCount }) => {
       style={{ borderBottom: "1px solid #1e2535", background: "#0f1117" }}
     >
       <div className="flex items-center gap-3">
-        <Avatar initials={initials} colorClass={colorClass} showDot isOnline />
+        <Avatar initials={initials} colorClass={colorClass} showDot status />
         <div>
           <p
             className="text-[15px] font-bold leading-tight"

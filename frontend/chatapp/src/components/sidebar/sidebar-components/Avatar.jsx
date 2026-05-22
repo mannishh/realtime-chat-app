@@ -5,7 +5,7 @@ const Avatar = ({
   colorClass,
   size = "md",
   showDot = false,
-  isOnline = false,
+  status
 }) => {
   const sizeClass =
     size === "sm"
@@ -22,7 +22,7 @@ const Avatar = ({
         <span
           className="absolute bottom-0.5 right-0.5 w-2.25 h-2.25 rounded-full border-2"
           style={{
-            background: isOnline ? "#4ade80" : "#3a4252",
+            background: status ? "#4ade80" : "#3a4252",
             borderColor: "#0f1117",
           }}
         />
