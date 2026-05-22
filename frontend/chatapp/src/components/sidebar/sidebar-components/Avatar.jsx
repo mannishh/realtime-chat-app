@@ -5,7 +5,7 @@ const Avatar = ({
   colorClass,
   size = "md",
   showDot = false,
-  status
+  status = {status}
 }) => {
   const sizeClass =
     size === "sm"
