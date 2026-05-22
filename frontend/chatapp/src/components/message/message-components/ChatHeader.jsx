@@ -22,7 +22,7 @@ const ChatHeader = ({ username, status, chatCount }) => {
             {username}
           </p>
           <p className="text-[11px] mt-0.5" style={{ color: "#4a5568" }}>
-            {status && <span>Online</span>} · {chatCount} messages
+            {status ? <span>Online</span> : <span>Offline</span>} · {chatCount} messages
           </p>
         </div>
       </div>
