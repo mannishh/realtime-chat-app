@@ -7,7 +7,7 @@ import { getIO } from "../socket/io.js";
 const cookieOptions = {
   httpOnly: true,
   secure: true,
-  sameSite: "Lax", // Protects against CSRF attacks
+  sameSite: "none", // Protects against CSRF attacks
   maxAge: 1 * 24 * 60 * 60 * 1000,
 };
 
@@ -140,7 +140,7 @@ export const logoutUser = async (req, res) => {
 
     return res
       .status(200)
-      .clearCookie("token", { httpOnly: true, secure: true, sameSite: "Lax" })
+      .clearCookie("token", { httpOnly: true, secure: true, sameSite: "none" })
       .json({ message: "Logged out successfully" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
