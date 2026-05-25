@@ -8,6 +8,8 @@ const CurrentUserFooter = ({ name, isOnline }) => {
   const { logout } = useAuth();
   const initials = name.charAt(0).toUpperCase();
 
+  console.log('object', isOnline)
+
   const avatarColors = [
     "bg-indigo-600 text-indigo-100",
     "bg-purple-600 text-purple-100",
@@ -49,7 +51,7 @@ const CurrentUserFooter = ({ name, isOnline }) => {
       style={{ borderTop: "1px solid #1e2535" }}
     >
       <div className="flex items-center gap-2.5">
-        <Avatar initials={initials} colorClass={colorClass} showDot isOnline />
+        <Avatar initials={initials} colorClass={colorClass} showDot isOnline={isOnline} />
         <div>
           <p className="text-[13px] font-semibold text-white">{name}</p>
           <p

@@ -47,6 +47,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     (u) => u._id.toString() !== currentUserId,
   );
 
+  const isMeOnline = onlineUsers.some(u => u._id.toString() === currentUserId) || user?.isOnline;
+
   return (
     <>
       {/* Overlay - mobile only */}
@@ -98,7 +100,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             />
           )}
         </div>
-        <CurrentUserFooter name={user?.name} isOnline={user?.isOnline} />
+        <CurrentUserFooter name={user?.name} isOnline={isMeOnline} />
       </aside>
     </>
   );

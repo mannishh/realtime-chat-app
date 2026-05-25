@@ -87,7 +87,7 @@ const Message = () => {
     <div className="flex flex-col h-full">
       <ChatHeader
         username={receiver?.name}
-        status={receiver?.isOnline}
+        isOnline={receiver?.isOnline}
         chatCount={messages.length}
       />
 

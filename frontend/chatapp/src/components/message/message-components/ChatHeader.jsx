@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import Avatar from "../../sidebar/sidebar-components/Avatar";
 import { getAvatarColor } from "../../../utils/avatarUtils";
 
-const ChatHeader = ({ username, status, chatCount }) => {
+const ChatHeader = ({ username, isOnline, chatCount }) => {
   const initials = username.charAt(0).toUpperCase();
 
   const colorClass = useMemo(() => getAvatarColor(username), [username]);
@@ -17,7 +17,7 @@ const ChatHeader = ({ username, status, chatCount }) => {
           initials={initials}
           colorClass={colorClass}
           showDot
-          status={status}
+          isOnline={isOnline}
         />
         <div>
           <p
@@ -27,7 +27,7 @@ const ChatHeader = ({ username, status, chatCount }) => {
             {username}
           </p>
           <p className="text-[11px] mt-0.5" style={{ color: "#4a5568" }}>
-            {status ? <span>Online</span> : <span>Offline</span>} · {chatCount}{" "}
+            {isOnline ? <span>Online</span> : <span>Offline</span>} · {chatCount}{" "}
             messages
           </p>
         </div>
